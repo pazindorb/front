@@ -2,9 +2,9 @@
 	<table class="table table-striped table-dark">
 		<thead>
 			<tr>
-				<th scope="col">Title</th>
-				<th scope="col">Created</th>
-				<th scope="col">Modified</th>
+				<th scope="col"><a (click)="sortTableByTitle()"> Title </a></th>
+				<th scope="col"><a (click)="sortTableByCreated()"> Created </a></th>
+				<th scope="col"><a (click)="sortTableByModified()"> Modified </a></th>
 			</tr>
 		</thead>
 		<tbody *ngFor="let note of notes">
@@ -22,7 +22,7 @@ tabindex="-1"
 role="dialog" 
 aria-labelledby="ContentModalLabel" 
 aria-hidden="true">
-	
+<button #toggler data-toggle="modal"  data-target="#ContentModal" style="display: none"></button>
 	<div class="modal-dialog modal-dialog-centered" role="document">
 	  <div class="modal-content">
 		<div class="modal-header">
@@ -34,9 +34,6 @@ aria-hidden="true">
 		</div>
 		<div class="modal-body">
 		 {{actualNote?.content}}
-		</div>
-		<div class="modal-footer">
-		  <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
 		</div>
 	  </div>
 	</div>

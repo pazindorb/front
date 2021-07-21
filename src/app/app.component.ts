@@ -1,5 +1,5 @@
 import { HttpErrorResponse } from '@angular/common/http';
-import { Component, OnInit } from '@angular/core';
+import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { Note } from './model/note';
 import { NoteResponse } from './model/note.response';
 import { NoteService } from './service/note.service';
@@ -10,15 +10,17 @@ import { NoteService } from './service/note.service';
   styleUrls: ['./app.component.css']
 })
 export class AppComponent implements OnInit {
-  [x: string]: any;
   public notes: Note[] = [];
   public actualNote: Note | undefined;
+  @ViewChild('toggler') toggler :ElementRef | undefined;
+  private alfabetical: boolean = false;
+  private created: boolean = false;
+  private modified: boolean = false;
 
   constructor(private noteService: NoteService){}
 
   ngOnInit(){
     this.getNotes();
-    this.sortTableByTitle();
   }
 
   public getNotes() : void {
@@ -43,22 +45,43 @@ export class AppComponent implements OnInit {
   }
 
   public showContentModal(note: Note): void{
-    const container = document.getElementById('main-container');
-    const button = document.createElement('button');
-    button.type = 'button';
-    button.style.display = 'none';
-    button.setAttribute('data-toggle', 'modal');
-    button.setAttribute('data-target', '#ContentModal');
-
     this.actualNote = note;
-
-    container?.appendChild(button);
-    button.click();
+    this.toggler?.nativeElement.click();
   }
 
   public sortTableByTitle(): void {
-    this.notes.sort(function(a, b){
-      return ('' + a.title).localeCompare(b.title);
-    })
+    if(this.alfabetical === false){
+      this.modified = false;
+      this.created = false;
+      this.alfabetical = true;
+      this.notes.sort(function(a, b){return ('' + a.title).localeCompare(b.title);})
+    }
+    else{
+      this.notes.reverse();
+    }
   }
+  public sortTableByCreated(): void {
+    if(this.created === false){
+      this.modified = false;
+      this.created = true;
+      this.alfabetical = false;
+      this.notes.sort(((a,b)=>a.created.getTime()-b.created.getTime()));
+    }
+    else{
+      this.notes.reverse();
+    }
+  }
+  public sortTableByModified(): void {
+    if(this.modified === false){
+      this.modified = true;
+      this.created = false;
+      this.alfabetical = false;
+      this.notes.sort(((a,b)=>a.modified.getTime()-b.modified.getTime()));
+    }
+    else{
+      this.notes.reverse();
+    }
+  }
+
+
 }
