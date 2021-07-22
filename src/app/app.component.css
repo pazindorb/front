@@ -1,0 +1,3 @@
+#main-container > table > thead > tr > th > span:hover {
+  cursor: pointer;
+}

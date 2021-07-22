@@ -3,6 +3,8 @@ import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { Note } from './model/note';
 import { NoteResponse } from './model/note.response';
 import { NoteService } from './service/note.service';
+import {NoteDetailsComponent} from "./note-details/note.details.component";
+import {SearchMode} from "./enums/search-mode";
 
 @Component({
   selector: 'app-root',
@@ -10,14 +12,16 @@ import { NoteService } from './service/note.service';
   styleUrls: ['./app.component.css']
 })
 export class AppComponent implements OnInit {
-  public notes: Note[] = [];
-  public actualNote: Note | undefined;
-  @ViewChild('toggler') toggler :ElementRef | undefined;
-  private alfabetical: boolean = false;
-  private created: boolean = false;
-  private modified: boolean = false;
+
+  searchMode: SearchMode | undefined;
+  increasingSearch: boolean = false;
+
+  searchTypes = SearchMode;
+  notes: Note[] = [];
 
   constructor(private noteService: NoteService){}
+
+  @ViewChild('noteDetails') noteDetails: NoteDetailsComponent | undefined;
 
   ngOnInit(){
     this.getNotes();
@@ -28,12 +32,7 @@ export class AppComponent implements OnInit {
       (response: NoteResponse[]) => {
          response.forEach((element) => {
             this.notes.push(
-              new Note(
-                element.title,
-                element.content,
-                new Date (element.created),
-                new Date (element.modified)
-              )
+              this.convertToNote(element)
             )
            }
          )
@@ -44,44 +43,39 @@ export class AppComponent implements OnInit {
     );
   }
 
+  private convertToNote(element: NoteResponse) {
+    return new Note(
+      element.title,
+      element.content,
+      new Date(element.created),
+      new Date(element.modified)
+    );
+  }
+
   public showContentModal(note: Note): void{
-    this.actualNote = note;
-    this.toggler?.nativeElement.click();
+    this.noteDetails?.showContentModal(note);
   }
 
-  public sortTableByTitle(): void {
-    if(this.alfabetical === false){
-      this.modified = false;
-      this.created = false;
-      this.alfabetical = true;
-      this.notes.sort(function(a, b){return ('' + a.title).localeCompare(b.title);})
-    }
-    else{
+  public sortBy(searchMode: SearchMode){
+    if(this.searchMode === searchMode){
       this.notes.reverse();
-    }
-  }
-  public sortTableByCreated(): void {
-    if(this.created === false){
-      this.modified = false;
-      this.created = true;
-      this.alfabetical = false;
-      this.notes.sort(((a,b)=>a.created.getTime()-b.created.getTime()));
-    }
-    else{
-      this.notes.reverse();
-    }
-  }
-  public sortTableByModified(): void {
-    if(this.modified === false){
-      this.modified = true;
-      this.created = false;
-      this.alfabetical = false;
-      this.notes.sort(((a,b)=>a.modified.getTime()-b.modified.getTime()));
-    }
-    else{
-      this.notes.reverse();
-    }
-  }
+      this.increasingSearch = !this.increasingSearch;
+    } else {
+      this.searchMode = searchMode;
+      this.increasingSearch = true;
 
-
+      switch (searchMode){
+        case SearchMode.TITLE:
+          this.notes.sort(function(a, b){return ('' + a.title).localeCompare(b.title);})
+          break;
+        case SearchMode.CREATED:
+          this.notes.sort(((a,b)=>a.created.getTime()-b.created.getTime()));
+          break;
+        case SearchMode.MODIFIED:
+          this.notes.sort(((a,b)=>a.modified.getTime()-b.modified.getTime()));
+          break;
+      }
+    }
+  }
 }
+

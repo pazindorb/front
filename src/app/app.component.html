@@ -1,40 +1,38 @@
-<div class ="container" id="main-container">
-	<table class="table table-striped table-dark">
-		<thead>
-			<tr>
-				<th scope="col"><a (click)="sortTableByTitle()"> Title </a></th>
-				<th scope="col"><a (click)="sortTableByCreated()"> Created </a></th>
-				<th scope="col"><a (click)="sortTableByModified()"> Modified </a></th>
-			</tr>
-		</thead>
-		<tbody *ngFor="let note of notes">
-			<tr>
-				<td><a (click)="showContentModal(note)">{{note?.title}}</a></td>
-				<td>{{note?.getCreated()}}</td>
-				<td>{{note?.getModified()}}</td>
-			</tr>
-		</tbody>
-	</table>
+<div class="container" id="main-container">
+  <table class="table table-striped table-dark">
+    <thead>
+    <tr>
+      <th scope="col" (click)="sortBy(searchTypes.TITLE)">
+        <span>Title</span>
+        <sort-indicator [activeSearchMode]="searchMode"
+                        [increasingSearch]="increasingSearch"
+                        [expectedSearchMode]="searchTypes.TITLE">
+        </sort-indicator>
+      </th>
+      <th scope="col" (click)="sortBy(searchTypes.CREATED)">
+        <span>Created</span>
+        <sort-indicator [activeSearchMode]="searchMode"
+                        [increasingSearch]="increasingSearch"
+                        [expectedSearchMode]="searchTypes.CREATED">
+        </sort-indicator>
+      </th>
+      <th scope="col" (click)="sortBy(searchTypes.MODIFIED)">
+        <span>Modified</span>
+        <sort-indicator [activeSearchMode]="searchMode"
+                        [increasingSearch]="increasingSearch"
+                        [expectedSearchMode]="searchTypes.MODIFIED">
+        </sort-indicator>
+      </th>
+    </tr>
+    </thead>
+    <tbody *ngFor="let note of notes">
+    <tr>
+      <td (click)="showContentModal(note)">{{note?.title}}</td>
+      <td>{{note?.getCreated()}}</td>
+      <td>{{note?.getModified()}}</td>
+    </tr>
+    </tbody>
+  </table>
 </div>
+<note-details #noteDetails></note-details>
 
-<div class="modal fade" id="ContentModal" 
-tabindex="-1" 
-role="dialog" 
-aria-labelledby="ContentModalLabel" 
-aria-hidden="true">
-<button #toggler data-toggle="modal"  data-target="#ContentModal" style="display: none"></button>
-	<div class="modal-dialog modal-dialog-centered" role="document">
-	  <div class="modal-content">
-		<div class="modal-header">
-		  <h5 class="modal-title" 
-		  id="ContentModalLabel">{{actualNote?.title}}</h5>
-		  <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-			<span aria-hidden="true">&times;</span>
-		  </button>
-		</div>
-		<div class="modal-body">
-		 {{actualNote?.content}}
-		</div>
-	  </div>
-	</div>
-  </div>
